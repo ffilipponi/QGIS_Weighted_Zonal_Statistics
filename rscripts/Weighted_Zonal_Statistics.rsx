@@ -18,18 +18,6 @@
 # Maintainer    : Federico Filipponi <federico.filipponi@gmail.com>
 # ########################################################
 
-# # ### for debug
-# Polygons <- "/media/DATA/ISPRA/new7/Incendi_e_Biodiversita_NBFC/sites/monte_Morrone/incendio_2017/Burned_area_2017.gpkg"
-# Raster <- "/media/DATA/ISPRA/new7/CSA/SIMonA/pubblicazione_prodotti/ECM/ecm-f4-2020_v1.0/ECM-F4-2020_v1.0/ECM-F4_2020_v1.0.tif"
-# Names <- "A,B,C,D,E"
-# Names <- NULL
-# Output <- "/media/DATA/download/test_zonal/test01.gpkg"
-# Format <- 0
-# Statistics <- "mean,sum,min,max"
-# Method <- 1
-# Method <- 0
-
-# ###################################
 # Initialize process
 message("-------------------------------------")
 message(paste(c("Started at: "), Sys.time(), sep=""))
@@ -89,8 +77,8 @@ invisible(tryCatch(find.package("terra"), error=function(e){
   }))
 if(extract_method %in% c("terra","fast","rough")){
   terra_version <- as.character(packageVersion("terra"))
-  terra_version <- as.double(paste(unlist(strsplit(terra_version, split='\\.'))[1], ".", unlist(strsplit(terra_version, split='\\.'))[2], sep=""))
-  if(terra_version < 1.7){
+  terra_version <- as.integer(unlist(strsplit(terra_version, split='\\.'))[1]) * 1000 + as.integer(unlist(strsplit(terra_version, split='\\.'))[2])
+  if(terra_version < 1007){
     message("ERROR: R package 'terra' version should be >= '1.7.0'.")
     q("no")
   }
@@ -102,8 +90,8 @@ if(extract_method == "exactextractr"){
   }))
   # check exactextractr version
   exactextractr_version <- as.character(packageVersion("exactextractr"))
-  exactextractr_version <- as.double(paste(unlist(strsplit(exactextractr_version, split='\\.'))[1], ".", unlist(strsplit(exactextractr_version, split='\\.'))[2], sep=""))
-  if(exactextractr_version < 0.9){
+  exactextractr_version <- as.integer(unlist(strsplit(exactextractr_version, split='\\.'))[1]) * 1000 + as.integer(unlist(strsplit(exactextractr_version, split='\\.'))[2])
+  if(exactextractr_version < 9){
     stop("R package 'exactextractr' version should be >= '0.9.0'.")
   }
 }
@@ -238,8 +226,6 @@ if(exists("vecto")){
       
       v <- classV[u]
       rV <- terra::which.lyr(r == v)
-      # rV <- terra::rast(r, vals=0)
-      # rV[which(r[] == v)] <- 1
       invisible(gc())
       
       # query raster on spatial polygons
